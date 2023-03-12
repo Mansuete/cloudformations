@@ -1,0 +1,1426 @@
+{
+    "Description": "Toolchain template which provides the resources needed to represent infrastructure as code. This template specifically creates a CI/CD pipeline to build a model using a SageMaker Pipeline and deploy the resulting trained ML Model from Model Registry to two stages in CD -- staging and production.",
+    "Parameters": {
+        "SageMakerProjectName": {
+            "Type": "String",
+            "Description": "Name of the project",
+            "NoEcho": true,
+            "MinLength": 1,
+            "MaxLength": 32,
+            "AllowedPattern": "^[a-zA-Z](-*[a-zA-Z0-9])*"
+        },
+        "SageMakerProjectId": {
+            "Type": "String",
+            "NoEcho": true,
+            "Description": "Service generated Id of the project."
+        },
+        "ModelBuildCodeRepositoryUrl": {
+            "Type": "String",
+            "MaxLength": 1024,
+            "Description": "Git Repository Url for the Model Building and Training Code Repository"
+        },
+        "ModelBuildCodeRepositoryBranch": {
+            "Type": "String",
+            "Default": "main",
+            "MaxLength": 255,
+            "Description": "Branch name for the Model Building and Training Code Repository"
+        },
+        "ModelBuildCodeRepositoryFullname": {
+            "Type": "String",
+            "MaxLength": 1024,
+            "Description": "Full repository name of the Model Building and Training Code Repository, which would be username/reponame or organizationname/reponame"
+        },
+        "ModelBuildCodeRepositoryCodestarConnectionArn": {
+            "Type": "String",
+            "Description": "Codestar Connection Arn for the Model Building and Training Code Repository"
+        },
+        "ModelBuildCodeRepositoryIsSeedcodeRequired": {
+            "Type": "String",
+            "Default": "true",
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Description": "Whether Seedcode needs to be populated for Model Building and Training Code Repository"
+        },
+        "ModelDeployCodeRepositoryUrl": {
+            "Type": "String",
+            "Description": "Git Repository Url for the Model Deployment Code Repository"
+        },
+        "ModelDeployCodeRepositoryBranch": {
+            "Type": "String",
+            "Default": "main",
+            "Description": "Branch name for the Model Deployment Code Repository"
+        },
+        "ModelDeployCodeRepositoryFullname": {
+            "Type": "String",
+            "MaxLength": 1024,
+            "Description": "Full repository name of the Model Deployment Code Repository, which would be username/reponame or organizationname/reponame"
+        },
+        "ModelDeployCodeRepositoryCodestarConnectionArn": {
+            "Type": "String",
+            "Description": "Codestar Connection Arn for the Model Deployment Code Repository"
+        },
+        "ModelDeployCodeRepositoryIsSeedcodeRequired": {
+            "Type": "String",
+            "Default": "true",
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Description": "Whether Seedcode needs to be populated for Model Deployment Code Repository"
+        }
+    },
+    "Metadata": {
+        "SagemakerTemplateParameterRules": {
+            "ModelBuildCodeRepositoryBranch": {
+                "Optional": true
+            },
+            "ModelDeployCodeRepositoryBranch": {
+                "Optional": true
+            }
+        },
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "ModelBuild CodeRepository Info"
+                    },
+                    "Parameters": [
+                        "ModelBuildCodeRepositoryUrl",
+                        "ModelBuildCodeRepositoryBranch",
+                        "ModelBuildCodeRepositoryFullname",
+                        "ModelBuildCodeRepositoryCodestarConnectionArn",
+                        "ModelBuildCodeRepositoryIsSeedcodeRequired"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "ModelDeploy CodeRepository Info"
+                    },
+                    "Parameters": [
+                        "ModelDeployCodeRepositoryUrl",
+                        "ModelDeployCodeRepositoryBranch",
+                        "ModelDeployCodeRepositoryFullname",
+                        "ModelDeployCodeRepositoryCodestarConnectionArn",
+                        "ModelDeployCodeRepositoryIsSeedcodeRequired"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "ModelBuildCodeRepositoryUrl": {
+                    "default": "URL"
+                },
+                "ModelBuildCodeRepositoryBranch": {
+                    "default": "Branch"
+                },
+                "ModelBuildCodeRepositoryFullname": {
+                    "default": "Full Repository Name"
+                },
+                "ModelBuildCodeRepositoryCodestarConnectionArn": {
+                    "default": "Codestar Connection ARN"
+                },
+                "ModelBuildCodeRepositoryIsSeedcodeRequired": {
+                    "default": "Sample Code"
+                },
+                "ModelDeployCodeRepositoryUrl": {
+                    "default": "URL"
+                },
+                "ModelDeployCodeRepositoryBranch": {
+                    "default": "Branch"
+                },
+                "ModelDeployCodeRepositoryFullname": {
+                    "default": "Full Repository Name"
+                },
+                "ModelDeployCodeRepositoryCodestarConnectionArn": {
+                    "default": "Codestar Connection ARN"
+                },
+                "ModelDeployCodeRepositoryIsSeedcodeRequired": {
+                    "default": "Sample Code"
+                }
+            }
+        },
+        "AWS::CloudFormation::Designer": {
+            "f6c00f10-3424-4950-a35d-5fd5c4f760b9": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "08e39385-e0ad-4301-8b61-3a5a260ecbe8": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "8a83f8cf-5c0b-4f88-b8d0-6d34c9d57c66": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "e3c273ab-68f3-42bf-8b1b-a1ab36a65044": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "095439b5-04d7-426d-998d-fe8819ffb225": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "e3c273ab-68f3-42bf-8b1b-a1ab36a65044"
+                ]
+            },
+            "ef06c47f-3fff-464b-b460-7f6332d8a7d7": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "14aa843b-5bab-47cf-9587-dbd2d032277c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 330
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "ef06c47f-3fff-464b-b460-7f6332d8a7d7"
+                ]
+            },
+            "dd981dd6-9e4d-4aa0-a0fb-57071cde72ce": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 330
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "8a83f8cf-5c0b-4f88-b8d0-6d34c9d57c66"
+                ]
+            },
+            "886d0649-05ae-4dcf-b154-01b15864e75b": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 330
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "a401d199-ffaa-4e3b-ae5a-47a80a636922": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "886d0649-05ae-4dcf-b154-01b15864e75b"
+                ]
+            },
+            "2315457f-8f63-456a-93bb-09230820205f": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "8a83f8cf-5c0b-4f88-b8d0-6d34c9d57c66"
+                ]
+            },
+            "130d17b0-ccc2-4447-b28c-4a52d9416ba2": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 330
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "38bd12b4-2cdc-4b55-81f2-757434155774": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 450
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "907ddcd0-7948-439c-af25-887e526ab606": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 450
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "fbcb75a6-2b71-450e-b515-dbd97f403609": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 450
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "dd981dd6-9e4d-4aa0-a0fb-57071cde72ce"
+                ]
+            },
+            "304e2ce4-175f-40a6-972a-e11a32b7abb3": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 450
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "61fda435-33a4-4aa1-9c3c-885ad24a3daf": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 540,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "f391a1d1-53c8-4a84-8ca6-67ae22f00aa0": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 540,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "2315457f-8f63-456a-93bb-09230820205f"
+                ]
+            }
+        }
+    },
+    "Conditions": {
+        "CreateResourceForModelBuildSeedcodeCheckin": {
+            "Fn::Equals": [
+                {
+                    "Ref": "ModelBuildCodeRepositoryIsSeedcodeRequired"
+                },
+                "true"
+            ]
+        },
+        "CreateResourceForModelDeploySeedcodeCheckin": {
+            "Fn::Equals": [
+                {
+                    "Ref": "ModelDeployCodeRepositoryIsSeedcodeRequired"
+                },
+                "true"
+            ]
+        },
+        "CreateResourceForAnySeedCodeCheckin": {
+            "Fn::Or": [
+                {
+                    "Condition": "CreateResourceForModelBuildSeedcodeCheckin"
+                },
+                {
+                    "Condition": "CreateResourceForModelDeploySeedcodeCheckin"
+                }
+            ]
+        }
+    },
+    "Resources": {
+        "MlOpsArtifactsBucket": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "BucketName": {
+                    "Fn::Sub": "sagemaker-project-${SageMakerProjectId}"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "38bd12b4-2cdc-4b55-81f2-757434155774"
+                }
+            }
+        },
+        "SageMakerModelPipelineBuildProject": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-modelbuild"
+                },
+                "Description": "Builds the model building workflow code repository, creates the SageMaker Pipeline and executes it",
+                "ServiceRole": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "Artifacts": {
+                    "Type": "CODEPIPELINE"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+                    "EnvironmentVariables": [
+                        {
+                            "Name": "SAGEMAKER_PROJECT_NAME",
+                            "Value": {
+                                "Ref": "SageMakerProjectName"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PROJECT_ID",
+                            "Value": {
+                                "Ref": "SageMakerProjectId"
+                            }
+                        },
+                        {
+                            "Name": "ARTIFACT_BUCKET",
+                            "Value": {
+                                "Ref": "MlOpsArtifactsBucket"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PIPELINE_NAME",
+                            "Value": {
+                                "Fn::Sub": "sagemaker-${SageMakerProjectName}"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PIPELINE_ROLE_ARN",
+                            "Value": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        "arn",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        "iam:",
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Name": "AWS_REGION",
+                            "Value": {
+                                "Ref": "AWS::Region"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PROJECT_ARN",
+                            "Value": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        "arn",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        "sagemaker",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        {
+                                            "Fn::Sub": "project/${SageMakerProjectName}"
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Source": {
+                    "Type": "CODEPIPELINE",
+                    "BuildSpec": "codebuild-buildspec.yml"
+                },
+                "TimeoutInMinutes": 480
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "61fda435-33a4-4aa1-9c3c-885ad24a3daf"
+                }
+            }
+        },
+        "ModelBuildPipeline": {
+            "Type": "AWS::CodePipeline::Pipeline",
+            "DependsOn": [
+                "MlOpsArtifactsBucket",
+                "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvokerWaitCondition"
+            ],
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-modelbuild"
+                },
+                "RoleArn": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "ArtifactStore": {
+                    "Type": "S3",
+                    "Location": {
+                        "Ref": "MlOpsArtifactsBucket"
+                    }
+                },
+                "Stages": [
+                    {
+                        "Name": "Source",
+                        "Actions": [
+                            {
+                                "Name": "ModelBuildWorkflowCode",
+                                "ActionTypeId": {
+                                    "Category": "Source",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeStarSourceConnection",
+                                    "Version": 1
+                                },
+                                "Configuration": {
+                                    "ConnectionArn": {
+                                        "Fn::Sub": "${ModelBuildCodeRepositoryCodestarConnectionArn}"
+                                    },
+                                    "FullRepositoryId": {
+                                        "Fn::Sub": "${ModelBuildCodeRepositoryFullname}"
+                                    },
+                                    "BranchName": {
+                                        "Fn::Sub": "${ModelBuildCodeRepositoryBranch}"
+                                    }
+                                },
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "ModelBuildSourceArtifact"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "Build",
+                        "Actions": [
+                            {
+                                "Name": "BuildAndExecuteSageMakerPipeline",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": 1
+                                },
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "ModelBuildSourceArtifact"
+                                    }
+                                ],
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "ModelBuildBuildArtifact"
+                                    }
+                                ],
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "SageMakerModelPipelineBuildProject"
+                                    }
+                                },
+                                "RunOrder": 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "f391a1d1-53c8-4a84-8ca6-67ae22f00aa0"
+                }
+            }
+        },
+        "ModelDeploySageMakerEventRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-model"
+                },
+                "Description": "Rule to trigger a deployment when SageMaker Model registry is updated with a new model package. For example, a new model package is registered with Registry",
+                "EventPattern": {
+                    "source": [
+                        "aws.sagemaker"
+                    ],
+                    "detail-type": [
+                        "SageMaker Model Package State Change"
+                    ],
+                    "detail": {
+                        "ModelPackageGroupName": [
+                            {
+                                "Fn::Sub": "${SageMakerProjectName}-${SageMakerProjectId}"
+                            }
+                        ],
+                        "ModelApprovalStatus": [
+                            {
+                                "anything-but": [
+                                    "PendingManualApproval"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    "arn",
+                                    {
+                                        "Ref": "AWS::Partition"
+                                    },
+                                    "codepipeline",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    {
+                                        "Ref": "ModelDeployPipeline"
+                                    }
+                                ]
+                            ]
+                        },
+                        "RoleArn": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    "arn",
+                                    {
+                                        "Ref": "AWS::Partition"
+                                    },
+                                    "iam:",
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                                ]
+                            ]
+                        },
+                        "Id": {
+                            "Fn::Sub": "sagemaker-${SageMakerProjectName}-trigger"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "304e2ce4-175f-40a6-972a-e11a32b7abb3"
+                }
+            }
+        },
+        "ModelDeployBuildProject": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-modeldeploy"
+                },
+                "Description": "Builds the Cfn template which defines the Endpoint with specified configuration",
+                "ServiceRole": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "Artifacts": {
+                    "Type": "CODEPIPELINE"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+                    "EnvironmentVariables": [
+                        {
+                            "Name": "SAGEMAKER_PROJECT_NAME",
+                            "Value": {
+                                "Ref": "SageMakerProjectName"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PROJECT_ID",
+                            "Value": {
+                                "Ref": "SageMakerProjectId"
+                            }
+                        },
+                        {
+                            "Name": "ARTIFACT_BUCKET",
+                            "Value": {
+                                "Ref": "MlOpsArtifactsBucket"
+                            }
+                        },
+                        {
+                            "Name": "MODEL_EXECUTION_ROLE_ARN",
+                            "Value": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        "arn",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        "iam:",
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Name": "SOURCE_MODEL_PACKAGE_GROUP_NAME",
+                            "Value": {
+                                "Fn::Sub": "${SageMakerProjectName}-${SageMakerProjectId}"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PROJECT_ARN",
+                            "Value": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        "arn",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        "sagemaker",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        {
+                                            "Fn::Sub": "project/${SageMakerProjectName}"
+                                        }
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Name": "AWS_REGION",
+                            "Value": {
+                                "Ref": "AWS::Region"
+                            }
+                        },
+                        {
+                            "Name": "EXPORT_TEMPLATE_NAME",
+                            "Value": "template-export.yml"
+                        },
+                        {
+                            "Name": "EXPORT_TEMPLATE_STAGING_CONFIG",
+                            "Value": "staging-config-export.json"
+                        },
+                        {
+                            "Name": "EXPORT_TEMPLATE_PROD_CONFIG",
+                            "Value": "prod-config-export.json"
+                        }
+                    ]
+                },
+                "Source": {
+                    "Type": "CODEPIPELINE",
+                    "BuildSpec": "buildspec.yml"
+                },
+                "TimeoutInMinutes": 30
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "907ddcd0-7948-439c-af25-887e526ab606"
+                }
+            }
+        },
+        "ModelDeployTestProject": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-testing"
+                },
+                "Description": "Test the deployment endpoint",
+                "ServiceRole": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "Artifacts": {
+                    "Type": "CODEPIPELINE"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+                    "EnvironmentVariables": [
+                        {
+                            "Name": "SAGEMAKER_PROJECT_NAME",
+                            "Value": {
+                                "Ref": "SageMakerProjectName"
+                            }
+                        },
+                        {
+                            "Name": "SAGEMAKER_PROJECT_ID",
+                            "Value": {
+                                "Ref": "SageMakerProjectId"
+                            }
+                        },
+                        {
+                            "Name": "AWS_REGION",
+                            "Value": {
+                                "Ref": "AWS::Region"
+                            }
+                        },
+                        {
+                            "Name": "BUILD_CONFIG",
+                            "Value": "staging-config-export.json"
+                        },
+                        {
+                            "Name": "EXPORT_TEST_RESULTS",
+                            "Value": "test-results.json"
+                        }
+                    ]
+                },
+                "Source": {
+                    "Type": "CODEPIPELINE",
+                    "BuildSpec": "test/buildspec.yml"
+                },
+                "TimeoutInMinutes": 30
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "130d17b0-ccc2-4447-b28c-4a52d9416ba2"
+                }
+            }
+        },
+        "ModelDeployPipeline": {
+            "Type": "AWS::CodePipeline::Pipeline",
+            "DependsOn": [
+                "MlOpsArtifactsBucket",
+                "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvokerWaitCondition"
+            ],
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-modeldeploy"
+                },
+                "RoleArn": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "ArtifactStore": {
+                    "Type": "S3",
+                    "Location": {
+                        "Ref": "MlOpsArtifactsBucket"
+                    }
+                },
+                "Stages": [
+                    {
+                        "Name": "Source",
+                        "Actions": [
+                            {
+                                "Name": "ModelDeployInfraCode",
+                                "ActionTypeId": {
+                                    "Category": "Source",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeStarSourceConnection",
+                                    "Version": 1
+                                },
+                                "Configuration": {
+                                    "ConnectionArn": {
+                                        "Fn::Sub": "${ModelDeployCodeRepositoryCodestarConnectionArn}"
+                                    },
+                                    "FullRepositoryId": {
+                                        "Fn::Sub": "${ModelDeployCodeRepositoryFullname}"
+                                    },
+                                    "BranchName": {
+                                        "Fn::Sub": "${ModelDeployCodeRepositoryBranch}"
+                                    }
+                                },
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "Build",
+                        "Actions": [
+                            {
+                                "Name": "BuildDeploymentTemplates",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": 1
+                                },
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    }
+                                ],
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "ModelDeployBuildProject"
+                                    }
+                                },
+                                "RunOrder": 1
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "DeployStaging",
+                        "Actions": [
+                            {
+                                "Name": "DeployResourcesStaging",
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "ActionTypeId": {
+                                    "Category": "Deploy",
+                                    "Owner": "AWS",
+                                    "Version": 1,
+                                    "Provider": "CloudFormation"
+                                },
+                                "Configuration": {
+                                    "ActionMode": "REPLACE_ON_FAILURE",
+                                    "Capabilities": "CAPABILITY_NAMED_IAM",
+                                    "RoleArn": {
+                                        "Fn::Join": [
+                                            ":",
+                                            [
+                                                "arn",
+                                                {
+                                                    "Ref": "AWS::Partition"
+                                                },
+                                                "iam:",
+                                                {
+                                                    "Ref": "AWS::AccountId"
+                                                },
+                                                "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                                            ]
+                                        ]
+                                    },
+                                    "StackName": {
+                                        "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-deploy-staging"
+                                    },
+                                    "TemplateConfiguration": "BuildArtifact::staging-config-export.json",
+                                    "TemplatePath": "BuildArtifact::template-export.yml"
+                                },
+                                "RunOrder": 1
+                            },
+                            {
+                                "Name": "TestStaging",
+                                "ActionTypeId": {
+                                    "Category": "Build",
+                                    "Owner": "AWS",
+                                    "Provider": "CodeBuild",
+                                    "Version": 1
+                                },
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "SourceArtifact"
+                                    },
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "OutputArtifacts": [
+                                    {
+                                        "Name": "TestArtifact"
+                                    }
+                                ],
+                                "Configuration": {
+                                    "ProjectName": {
+                                        "Ref": "ModelDeployTestProject"
+                                    },
+                                    "PrimarySource": "SourceArtifact"
+                                },
+                                "RunOrder": 2
+                            },
+                            {
+                                "Name": "ApproveDeployment",
+                                "ActionTypeId": {
+                                    "Category": "Approval",
+                                    "Owner": "AWS",
+                                    "Version": 1,
+                                    "Provider": "Manual"
+                                },
+                                "Configuration": {
+                                    "CustomData": "Approve this model for Production"
+                                },
+                                "RunOrder": 3
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "DeployProd",
+                        "Actions": [
+                            {
+                                "Name": "DeployResourcesProd",
+                                "InputArtifacts": [
+                                    {
+                                        "Name": "BuildArtifact"
+                                    }
+                                ],
+                                "ActionTypeId": {
+                                    "Category": "Deploy",
+                                    "Owner": "AWS",
+                                    "Version": 1,
+                                    "Provider": "CloudFormation"
+                                },
+                                "Configuration": {
+                                    "ActionMode": "CREATE_UPDATE",
+                                    "RoleArn": {
+                                        "Fn::Join": [
+                                            ":",
+                                            [
+                                                "arn",
+                                                {
+                                                    "Ref": "AWS::Partition"
+                                                },
+                                                "iam:",
+                                                {
+                                                    "Ref": "AWS::AccountId"
+                                                },
+                                                "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                                            ]
+                                        ]
+                                    },
+                                    "Capabilities": "CAPABILITY_NAMED_IAM",
+                                    "StackName": {
+                                        "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-deploy-prod"
+                                    },
+                                    "TemplateConfiguration": "BuildArtifact::prod-config-export.json",
+                                    "TemplatePath": "BuildArtifact::template-export.yml"
+                                },
+                                "RunOrder": 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "fbcb75a6-2b71-450e-b515-dbd97f403609"
+                }
+            }
+        },
+        "GitSeedCodeCheckinProject": {
+            "Type": "AWS::CodeBuild::Project",
+            "Condition": "CreateResourceForAnySeedCodeCheckin",
+            "Properties": {
+                "Name": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-git-seedcodecheckin"
+                },
+                "Description": "Checkin the initial seedcode into the given repository",
+                "ServiceRole": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "Artifacts": {
+                    "Type": "NO_ARTIFACTS"
+                },
+                "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+                },
+                "Source": {
+                    "Type": "S3",
+                    "Location": "sagemaker-servicecatalog-seedcode-us-east-1/bootstrap/GitRepositorySeedCodeCheckinCodeBuildProject-v1.0.zip",
+                    "BuildSpec": "buildspec.yml"
+                },
+                "TimeoutInMinutes": 14
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e3c273ab-68f3-42bf-8b1b-a1ab36a65044"
+                }
+            }
+        },
+        "GitSeedCodeCheckinProjectTriggerLambda": {
+            "DependsOn": "GitSeedCodeCheckinProject",
+            "Type": "AWS::Lambda::Function",
+            "Condition": "CreateResourceForAnySeedCodeCheckin",
+            "Properties": {
+                "Description": "To trigger the codebuild project for the seedcode checkin",
+                "Handler": "index.lambda_handler",
+                "Runtime": "python3.8",
+                "FunctionName": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectId}-git-seedcodecheckin"
+                },
+                "Timeout": 900,
+                "Role": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            "arn",
+                            {
+                                "Ref": "AWS::Partition"
+                            },
+                            "iam:",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            "role/service-role/AmazonSageMakerServiceCatalogProductsUseRole"
+                        ]
+                    ]
+                },
+                "Code": {
+                    "ZipFile": "import boto3\nimport cfnresponse\nimport os\nimport time\n\n# This function should be triggered by the custom resource in the cfn template, Called along with the\n# seedcode information (what code needs to be populated), the git repository information (where it\n# needs to be populated) and the git codestar connection information. This would inturn trigger\n# the codebuild which does the population of the seedcode\ndef lambda_handler(event, context):\n  responseData = {}\n  if event['RequestType'] == 'Create':\n    client = boto3.client('codebuild')\n    response = client.start_build(\n      projectName=os.environ['CodeBuildProjectName'],\n      environmentVariablesOverride=get_build_environment_variables_override(event)\n    )\n    poll_timeout = 840 # This Value is assigned based on the codebuild project timeout value\n    max_poll_time = time.time() + poll_timeout\n    build_status = poll_and_get_build_status(client, response['build']['id'], max_poll_time)\n    if (build_status != 'SUCCEEDED'):\n      if (time.time() > max_poll_time and build_status == 'IN_PROGRESS'):\n        failure_reason = 'Codebuild to checkin seedcode did not complete within ' + poll_timeout + ' seconds'\n      else:\n        failure_reason = 'Codebuild to checkin seedcode has status ' + build_status\n      cfnresponse.send(event, context, cfnresponse.FAILED, responseData, reason=failure_reason)\n    else:\n      cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)\n  else:\n    cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)\ndef get_build_environment_variables_override(event):\n  return [\n    {\n      'name': 'SEEDCODE_BUCKET_NAME',\n      'value': event['ResourceProperties']['SEEDCODE_BUCKET_NAME'],\n      'type': 'PLAINTEXT'\n    },\n    {\n      'name': 'SEEDCODE_BUCKET_KEY',\n      'value': event['ResourceProperties']['SEEDCODE_BUCKET_KEY'],\n      'type': 'PLAINTEXT'\n    },\n    {\n      'name': 'GIT_REPOSITORY_FULL_NAME',\n      'value': event['ResourceProperties']['GIT_REPOSITORY_FULL_NAME'],\n      'type': 'PLAINTEXT'\n    },\n    {\n      'name': 'GIT_REPOSITORY_BRANCH',\n      'value': event['ResourceProperties']['GIT_REPOSITORY_BRANCH'],\n      'type': 'PLAINTEXT'\n    },\n    {\n      'name': 'GIT_REPOSITORY_CONNECTION_ARN',\n      'value': event['ResourceProperties']['GIT_REPOSITORY_CONNECTION_ARN'],\n      'type': 'PLAINTEXT'\n    }\n  ]\n\ndef poll_and_get_build_status(client, build_id, max_poll_time):\n  # usually it takes around 70 to 85 seconds for initializing the codebuild and\n  # for the seedcode to get checked in\n  initial_poll_interval = 60\n  poll_interval = 15\n  time.sleep(initial_poll_interval)\n  build_status='IN_PROGRESS'\n  while build_status == 'IN_PROGRESS' and time.time() < max_poll_time:\n      build_status = client.batch_get_builds(ids=[build_id])['builds'][0]['buildStatus']\n      time.sleep(poll_interval)\n  return build_status\n"
+                },
+                "Environment": {
+                    "Variables": {
+                        "CodeBuildProjectName": {
+                            "Fn::Sub": "sagemaker-${SageMakerProjectName}-${SageMakerProjectId}-git-seedcodecheckin"
+                        }
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "095439b5-04d7-426d-998d-fe8819ffb225"
+                }
+            }
+        },
+        "WaitHandle": {
+            "Type": "AWS::CloudFormation::WaitConditionHandle",
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8a83f8cf-5c0b-4f88-b8d0-6d34c9d57c66"
+                }
+            }
+        },
+        "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvoker": {
+            "Type": "AWS::CloudFormation::CustomResource",
+            "Condition": "CreateResourceForModelBuildSeedcodeCheckin",
+            "DependsOn": "GitSeedCodeCheckinProjectTriggerLambda",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "GitSeedCodeCheckinProjectTriggerLambda",
+                        "Arn"
+                    ]
+                },
+                "SEEDCODE_BUCKET_NAME": "sagemaker-servicecatalog-seedcode-us-east-1",
+                "SEEDCODE_BUCKET_KEY": "toolchain/model-building-workflow-v1.0.zip",
+                "GIT_REPOSITORY_FULL_NAME": {
+                    "Fn::Sub": "${ModelBuildCodeRepositoryFullname}"
+                },
+                "GIT_REPOSITORY_BRANCH": {
+                    "Fn::Sub": "${ModelBuildCodeRepositoryBranch}"
+                },
+                "GIT_REPOSITORY_CONNECTION_ARN": {
+                    "Fn::Sub": "${ModelBuildCodeRepositoryCodestarConnectionArn}"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "886d0649-05ae-4dcf-b154-01b15864e75b"
+                }
+            }
+        },
+        "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvokerWaitHandle": {
+            "Condition": "CreateResourceForModelBuildSeedcodeCheckin",
+            "DependsOn": "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvoker",
+            "Type": "AWS::CloudFormation::WaitConditionHandle",
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "a401d199-ffaa-4e3b-ae5a-47a80a636922"
+                }
+            }
+        },
+        "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvokerWaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "Properties": {
+                "Handle": {
+                    "Fn::If": [
+                        "CreateResourceForModelBuildSeedcodeCheckin",
+                        {
+                            "Ref": "SageMakerModelBuildSeedCodeCheckinProjectTriggerLambdaInvokerWaitHandle"
+                        },
+                        {
+                            "Ref": "WaitHandle"
+                        }
+                    ]
+                },
+                "Timeout": "10",
+                "Count": 0
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "2315457f-8f63-456a-93bb-09230820205f"
+                }
+            }
+        },
+        "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvoker": {
+            "Type": "AWS::CloudFormation::CustomResource",
+            "Condition": "CreateResourceForModelDeploySeedcodeCheckin",
+            "DependsOn": "GitSeedCodeCheckinProjectTriggerLambda",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "GitSeedCodeCheckinProjectTriggerLambda",
+                        "Arn"
+                    ]
+                },
+                "SEEDCODE_BUCKET_NAME": "sagemaker-servicecatalog-seedcode-us-east-1",
+                "SEEDCODE_BUCKET_KEY": "toolchain/mpg-deployment-config-v1.0.zip",
+                "GIT_REPOSITORY_FULL_NAME": {
+                    "Fn::Sub": "${ModelDeployCodeRepositoryFullname}"
+                },
+                "GIT_REPOSITORY_BRANCH": {
+                    "Fn::Sub": "${ModelDeployCodeRepositoryBranch}"
+                },
+                "GIT_REPOSITORY_CONNECTION_ARN": {
+                    "Fn::Sub": "${ModelDeployCodeRepositoryCodestarConnectionArn}"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ef06c47f-3fff-464b-b460-7f6332d8a7d7"
+                }
+            }
+        },
+        "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvokerWaitHandle": {
+            "Condition": "CreateResourceForModelBuildSeedcodeCheckin",
+            "DependsOn": "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvoker",
+            "Type": "AWS::CloudFormation::WaitConditionHandle",
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "14aa843b-5bab-47cf-9587-dbd2d032277c"
+                }
+            }
+        },
+        "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvokerWaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "Properties": {
+                "Handle": {
+                    "Fn::If": [
+                        "CreateResourceForModelBuildSeedcodeCheckin",
+                        {
+                            "Ref": "SageMakerModelDeploySeedCodeCheckinProjectTriggerLambdaInvokerWaitHandle"
+                        },
+                        {
+                            "Ref": "WaitHandle"
+                        }
+                    ]
+                },
+                "Timeout": "10",
+                "Count": 0
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "dd981dd6-9e4d-4aa0-a0fb-57071cde72ce"
+                }
+            }
+        },
+        "ModelBuildSagemakerCodeRepository": {
+            "Type": "AWS::SageMaker::CodeRepository",
+            "Properties": {
+                "CodeRepositoryName": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectId}-modelbuild"
+                },
+                "GitConfig": {
+                    "Branch": {
+                        "Fn::Sub": "${ModelBuildCodeRepositoryBranch}"
+                    },
+                    "RepositoryUrl": {
+                        "Fn::Sub": "${ModelBuildCodeRepositoryUrl}"
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "08e39385-e0ad-4301-8b61-3a5a260ecbe8"
+                }
+            }
+        },
+        "ModelDeploySagemakerCodeRepository": {
+            "Type": "AWS::SageMaker::CodeRepository",
+            "Properties": {
+                "CodeRepositoryName": {
+                    "Fn::Sub": "sagemaker-${SageMakerProjectId}-modeldeploy"
+                },
+                "GitConfig": {
+                    "Branch": {
+                        "Fn::Sub": "${ModelDeployCodeRepositoryBranch}"
+                    },
+                    "RepositoryUrl": {
+                        "Fn::Sub": "${ModelDeployCodeRepositoryUrl}"
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "f6c00f10-3424-4950-a35d-5fd5c4f760b9"
+                }
+            }
+        }
+    },
+    "Rules": {}
+}
